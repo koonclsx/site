@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate="anime">Статистика по аниме</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+</head>
+<body>
+    
+    <!-- Основной контейнер -->
+    <!-- Main container -->
+    <div class="container">
+
+        <!-- Кнопка назад -->
+        <!-- Back button -->
+        <div class="page-links">
+            <a href="index.html" class="page-button">Главная</a>
+        </div>
+
+        <h1 data-translate="anime">Моя статистика аниме</h1>
+        <h2 data-translate="leg">Легенда списка</h2>
+        <p data-translate="leg3">#🎬 = Смотрю</p>
+        <p data-translate="leg4">#📝 = В планах</p>
+        <p data-translate="leg5">#✅ = Просмотрено</p>
+        <div class="anime-list">
+            <ul id="anime-list"></ul>
+        </div>
+    </div>
+
+    <script>
+
+        //<!-- Функция для чтения и обработки CSV -->
+        //<!-- Function for reading and processing CSV -->
+        async function loadAnimeData() {
+    try {
+        const response = await fetch('data/anime/anime.csv');
+        if (!response.ok) {
+            throw new Error('Ошибка загрузки файла');
+        }
+        const csvData = await response.text();
+
+        //<!-- Регулярное выражение для разделения на ячейки, игнорируя запятые внутри кавычек -->
+        //<!-- Regular expression for dividing into cells, ignoring commas inside quotation marks -->
+        const rows = csvData.split('\n').slice(1).filter(row => row.trim() !== '');
+
+        return rows.map(row => {
+
+            //<!-- Разделяем строки по запятой, игнорируя запятые внутри кавычек -->
+            //<!-- Separating lines by commas, ignoring commas inside quotation marks -->
+            const columns = row.match(/(".*?"|[^",\n]+)(?=\s*,|\s*$)/g).map(col => col.replace(/^"|"$/g, '').trim());
+
+            //<!-- Проверяем наличие всех значений -->
+            //<!-- Checking for all values -->
+            const id = columns[0] || '';
+            const title_ru = columns[1] || '';
+            const title_en = columns[2] || '';
+            const status = columns[3] || '';
+
+            return {
+                id,
+                title_ru,
+                title_en,
+                status
+            };
+        });
+    } catch (error) {
+        console.error('Ошибка загрузки данных:', error);
+        return [];
+    }
+}
+
+        //<!-- Функция для отображения списка аниме -->
+        //<!-- A function for displaying a list of anime -->
+        async function displayAnimeList() {
+            const animeList = await loadAnimeData();
+            const animeListElement = document.getElementById('anime-list');
+            animeList.forEach(anime => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
+                    <div>
+                        <strong>${anime.title_ru}</strong><br>
+                        <span style="font-size: 0.9em; color: gray;">${anime.title_en}</span>
+                    </div>
+                    <span>${anime.status}</span>
+                `;
+                animeListElement.appendChild(listItem);
+            });
+        }
+
+        //<!-- Запуск отображения списка аниме -->
+        //<!-- Starting the anime list display -->
+        displayAnimeList();
+    </script>
+
+    <!-- Кнопка смены языка -->
+    <!-- Language change button -->
+    <div class="language-switch">
+        <button class="lang-btn" data-lang="ru">RU</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+    </div>
+
+    <!-- Запрос скриптов -->
+    <!-- Request Scripts -->
+    <script src="scripts.js"></script>
+    
+</body>
+</html>
