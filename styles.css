@@ -143,3 +143,20 @@ h1 {
 .page-button:hover {
     background-color: #555;
 }
+
+.back-button {
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 18px;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    border: none;
+    cursor: pointer; 
+}
+
+.back-button:hover {
+    background-color: #555;
+}
